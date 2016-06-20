@@ -1,5 +1,10 @@
 class kubernetes_setup::node {
 
+  service { 'firewalld':
+    enable => false,
+    ensure => stopped,
+  }
+
   package { ['docker','kubernetes-node','flannel']:
     ensure => installed,
   }
@@ -7,6 +12,12 @@ class kubernetes_setup::node {
   service { ['docker','flanneld','kubelet','kube-proxy']:
     enable => true,
     ensure => running,
+  }
+
+  transition { 'stop docker service':
+    resource   => Service['docker'],
+    attributes => { ensure => stopped },
+    prior_to   => File['/var/lib/docker'],
   }
 
   file { '/var/lib/docker':
