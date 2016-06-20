@@ -20,7 +20,7 @@ class kubernetes_setup::master {
     require => Package['flannel'],
   }
 
-  exec { '/bin/etcdctl set coreos.com/network/config < /etc/flannel-config.json':
+  exec { '/bin/etcdctl set coreos.com/network/config < /tmp/flannel-config.json':
     refreshonly => true,
     subscribe   => File['/tmp/flannel-config.json'],
     notify      => Service['flanneld'],

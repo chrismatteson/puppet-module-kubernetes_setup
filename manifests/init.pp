@@ -4,6 +4,5 @@ class kubernetes_setup {
     ensure => installed,
   }
 
-  service { '
 }
 
