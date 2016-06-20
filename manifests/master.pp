@@ -22,15 +22,25 @@ class kubernetes_setup::master {
 
   exec { '/bin/etcdctl set coreos.com/network/config < /tmp/flannel-config.json':
     refreshonly => true,
-    subscribe   => File['/tmp/flannel-config.json'],
+    subscribe   => [File['/tmp/flannel-config.json'],File_line['FLANNEL_ETCD_KEY'],File_line['FLANNEL_ETCD']],
     notify      => Service['flanneld'],
   }
 
-  file_line { 'FLANNEL_ETCD':
-    path   => '/etc/etcd/etcd.conf',
+  @@file_line { 'FLANNEL_ETCD_KEY':
+    path   => '/etc/sysconfig/flanneld',
+    ensure => present,
+    match  => '^FLANNEL_ETCD_KEY=',
+    line   => "FLANNEL_ETCD_KEY='/coreos.com/network'",
+    tag    => 'kubernetes',
+  }
+
+  @@file_line { 'FLANNEL_ETCD':
+    path   => '/etc/sysconfig/flanneld',
     ensure => present,
     match  => '^FLANNEL_ETCD=',
-    line   => 'FLANNEL_ETCD="http://kube-master:2379"',
-    notify => Service['flanneld'],
+    line   => "FLANNEL_ETCD='http://$::fqdn:2379'",
+    tag    => 'kubernetes',
   }
+
+  File_line <<| tag == 'kubernetes' |>>
 }

@@ -25,7 +25,7 @@ class kubernetes_setup::etcd_config {
     path   => '/etc/etcd/etcd.conf',
     ensure => present,
     match  => '^KUBE_MASTER=',
-    line   => 'KUBE_MASTER="--master=htt://kube-master:8080"',
+    line   => "KUBE_MASTER='--master=http://$fqdn:8080'",
   }
 
   file_line { 'KUBE_API_ADDRESS':
