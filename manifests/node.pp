@@ -47,15 +47,6 @@ class kubernetes_setup::node {
     notify  => Service['docker'],
   }
 
-  file_line { 'KUBE_MASTER':
-    path    => '/etc/kubernetes/config',
-    ensure  => present,
-    match   => '^KUBE_MASTER=',
-    line    => 'KUBE_MASTER="--master=http://kube-master:8080"',
-    require => Package['kubernetes-node'],
-    notify  => Service['kube-proxy'],
-  }
-
   file_line { 'KUBELET_ADDRESS':
     path    => '/etc/kubernetes/kubelet',
     ensure  => present,
@@ -65,14 +56,15 @@ class kubernetes_setup::node {
     notify  => Service['kubelet'],
   }
 
-  file_line { 'KUBELET_API_SERVER':
+  file_line { 'KUBELET_HOSTNAME':
     path    => '/etc/kubernetes/kubelet',
     ensure  => present,
-    match   => '^KUBELET_API_SERVER=',
-    line    => 'KUBELET_API_SERVER="--api_servers=http://kube-master:8080"',
+    match   => '^KUBELET_HOSTNAME=',
+    line    => 'KUBELET_HOSTNAME=',
     require => Package['kubernetes-node'],
     notify  => Service['kubelet'],
   }
 
-  File_line <<| tag == 'kubernetes' |>>
+  File_line <<| tag == 'kubernetes-all' |>>
+  File_line <<| tag == 'kubernetes-node' |>>
 }
