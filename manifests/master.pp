@@ -69,7 +69,7 @@ class kubernetes_setup::master {
 
   file { '/tmp/flannel-config.json':
     ensure => file,
-    source => 'puppet:///modules/demomodule/flannel-config.json',
+    source => 'puppet:///modules/kubernetes_setup/flannel-config.json',
     require => Package['flannel'],
   }
 
