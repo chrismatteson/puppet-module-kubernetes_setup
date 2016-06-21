@@ -53,6 +53,15 @@ class kubernetes_setup::master {
     notify  => Service['kube-apiserver'],
   }
 
+  file_line { 'KUBE_ADMISSION_CONTROL':
+    path   => '/etc/kubernetes/apiserver',
+    ensure => present,
+    match  => '^KUBE_ADMISSION_CONTROL=',
+    line   => 'KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ResourceQuota"',
+    require => Package['kubernetes-master'],
+    notify  => Service['kube-apiserver'],
+  }
+
   file_line { 'KUBE_ETCD_SERVERS':
     path   => '/etc/kubernetes/apiserver',
     ensure => present,
@@ -84,6 +93,7 @@ class kubernetes_setup::master {
     ensure => present,
     match  => '^FLANNEL_ETCD_KEY=',
     line   => "FLANNEL_ETCD_KEY='/coreos.com/network'",
+    notify => Service['flanneld'],
     tag    => 'kubernetes-all',
   }
 
@@ -92,6 +102,7 @@ class kubernetes_setup::master {
     ensure => present,
     match  => '^FLANNEL_ETCD=',
     line   => "FLANNEL_ETCD='http://$::fqdn:2379'",
+    notify => Service['flanneld'],
     tag    => 'kubernetes-all',
   }
 

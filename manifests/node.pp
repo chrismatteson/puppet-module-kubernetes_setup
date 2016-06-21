@@ -14,20 +14,20 @@ class kubernetes_setup::node {
     ensure => running,
   }
 
-  transition { 'stop docker service':
-    resource   => Service['docker'],
-    attributes => { ensure => stopped },
-    prior_to   => File['/var/lib/docker'],
-  }
+#  transition { 'stop docker service':
+#    resource   => Service['docker'],
+#    attributes => { ensure => stopped },
+#    prior_to   => File['/var/lib/docker'],
+#  }
 
-  file { '/var/lib/docker':
-    ensure  => 'absent',
-    recurse => true,
-    purge   => true,
-    force   => true,
-    require => Package['docker'],
-    notify  => Service['docker'],
-  }
+#  file { '/var/lib/docker':
+#    ensure  => 'absent',
+#    recurse => true,
+#    purge   => true,
+#    force   => true,
+#    require => Package['docker'],
+#    notify  => Service['docker'],
+#  }
 
   file_line { 'DOCKER_OPTIONS':
     path   => '/etc/sysconfig/docker',
